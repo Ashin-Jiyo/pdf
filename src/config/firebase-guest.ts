@@ -4,15 +4,15 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
-// Guest Firebase project configuration
+// Guest Firebase project configuration (loaded from environment variables for security)
 const guestFirebaseConfig = {
-  apiKey: "AIzaSyBDcRabMU_tmv8dx2BihfGTcAlkRKGS-6k",
-  authDomain: "guestpdf-13013.firebaseapp.com",
-  projectId: "guestpdf-13013",
-  storageBucket: "guestpdf-13013.firebasestorage.app",
-  messagingSenderId: "489548538163",
-  appId: "1:489548538163:web:52976b71ab1e1125c65e46",
-  measurementId: "G-MCMEWG56VX"
+  apiKey: import.meta.env.VITE_GUEST_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_GUEST_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_GUEST_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_GUEST_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_GUEST_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_GUEST_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_GUEST_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Guest Firebase App with a unique name

@@ -16,7 +16,7 @@ const GuestUpload: React.FC = () => {
     title: '',
     author: '',
     description: '',
-    category: '' as string, // Changed from categories array to single category
+    category: '' as string, // Only one category allowed
     tags: [] as string[],
     pdfLink: '',
   });
@@ -80,9 +80,11 @@ const GuestUpload: React.FC = () => {
   };
 
   const handleCategoryChange = (categoryId: string) => {
+    // Find the category name by id
+    const categoryObj = categories.find(cat => cat.id === categoryId);
     setFormData(prev => ({
       ...prev,
-      category: categoryId
+      category: categoryObj ? categoryObj.name : ''
     }));
     setCategoryDropdownOpen(false); // Close dropdown after selection
   };
@@ -126,6 +128,12 @@ const GuestUpload: React.FC = () => {
       return;
     }
 
+
+    if (!formData.category) {
+      toast.error('Please select a category');
+      return;
+    }
+
     if (uploadMethod === 'file' && !selectedFile) {
       toast.error('Please select a PDF file');
       return;
@@ -141,7 +149,7 @@ const GuestUpload: React.FC = () => {
         title: formData.title.trim(),
         author: formData.author.trim(),
         description: formData.description.trim(),
-        categories: formData.category ? [formData.category] : [],
+        categories: formData.category ? [formData.category] : [], // Now category is the name
         tags: formData.tags,
         viewCount: 0,
         downloadCount: 0,
@@ -574,7 +582,7 @@ const GuestUpload: React.FC = () => {
                 }}>
                   {formData.category ? (
                     (() => {
-                      const category = categories.find(cat => cat.id === formData.category);
+                      const category = categories.find(cat => cat.name === formData.category);
                       return category ? (
                         <span
                           key={formData.category}
@@ -641,56 +649,57 @@ const GuestUpload: React.FC = () => {
                   maxHeight: '200px',
                   overflowY: 'auto'
                 }}>
-                  {categories.length > 0 ? categories.map((category) => (
-                    <div
-                      key={category.id}
-                      onClick={() => {
-                        handleCategoryChange(category.id);
-                      }}
-                      style={{
-                        padding: '0.75rem 1rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        borderBottom: '1px solid rgba(224, 230, 237, 0.5)',
-                        transition: 'all 0.3s ease',
-                        background: formData.category === category.id 
-                          ? 'rgba(52, 152, 219, 0.1)' 
-                          : 'transparent'
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.background = formData.category === category.id
-                          ? 'rgba(52, 152, 219, 0.2)'
-                          : 'rgba(52, 152, 219, 0.05)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.background = formData.category === category.id
-                          ? 'rgba(52, 152, 219, 0.1)'
-                          : 'transparent';
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="category"
-                        checked={formData.category === category.id}
-                        onChange={() => {}}
+                  {categories.length > 0 ? categories.map((category) => {
+                    const isSelected = formData.category === category.name;
+                    return (
+                      <div
+                        key={category.id}
+                        onClick={() => handleCategoryChange(category.id)}
                         style={{
-                          width: '18px',
-                          height: '18px',
-                          accentColor: '#3498db',
-                          cursor: 'pointer'
+                          padding: '0.75rem 1rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          borderBottom: '1px solid rgba(224, 230, 237, 0.5)',
+                          transition: 'all 0.3s ease',
+                          background: isSelected 
+                            ? 'rgba(52, 152, 219, 0.1)' 
+                            : 'transparent'
                         }}
-                      />
-                      <span style={{
-                        color: '#2c3e50',
-                        fontSize: '0.9rem',
-                        fontWeight: formData.category === category.id ? 600 : 400
-                      }}>
-                        {category.name}
-                      </span>
-                    </div>
-                  )) : (
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.background = isSelected
+                            ? 'rgba(52, 152, 219, 0.2)'
+                            : 'rgba(52, 152, 219, 0.05)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.background = isSelected
+                            ? 'rgba(52, 152, 219, 0.1)'
+                            : 'transparent';
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="category"
+                          checked={isSelected}
+                          onChange={() => handleCategoryChange(category.id)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#3498db',
+                            cursor: 'pointer'
+                          }}
+                        />
+                        <span style={{
+                          color: '#2c3e50',
+                          fontSize: '0.9rem',
+                          fontWeight: isSelected ? 600 : 400
+                        }}>
+                          {category.name}
+                        </span>
+                      </div>
+                    );
+                  }) : (
                     <div style={{
                       padding: '1rem',
                       textAlign: 'center',
