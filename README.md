@@ -1,6 +1,6 @@
 # Dynamic PDF Library & Content Hub
 
-🌟 **Live Demo**: [https://ashin-jiyo.github.io/pdf-library-hub/](https://ashin-jiyo.github.io/pdf-library-hub/)
+🌟 **Live Demo**: [https://ashin.me/pdf/](https://ashin.me/pdf/)
 
 A comprehensive React-based web application for managing and sharing PDF documents with advanced features including full-text search, user comments, analytics, and role-based administration.
 
