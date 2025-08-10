@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     // For GitHub Pages, set base to your repo name (with trailing slash)
-    base: isProd ? '/pdf-library-hub/' : '/', // Change 'pdf-library-hub' to your actual repo name if different
+  base: isProd ? '/pdf/' : '/', // Set base to new repo name for GitHub Pages
     server: {
       host: true, // Expose to network
       port: 5173,

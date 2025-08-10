@@ -13,18 +13,26 @@ const GuestUpload: React.FC = () => {
   const { guestUser } = useGuestAuth();
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const [uploadMethod, setUploadMethod] = useState<'file' | 'link'>('file');
-  const [formData, setFormData] = useState({
+  type FormDataType = {
+    title: string;
+    author: string;
+    description: string;
+    category: string;
+    tags: string[];
+    pdfLink: string;
+  };
+  const [formData, setFormData] = useState<FormDataType>({
     title: '',
     author: '',
     description: '',
-    category: '' as string, // Only one category allowed
-    tags: [] as string[],
+    category: '',
+    tags: [],
     pdfLink: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [tagInput, setTagInput] = useState('');
-  const [configChecked, setConfigChecked] = useState(false);
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const [tagInput, setTagInput] = useState<string>('');
+  const [configChecked, setConfigChecked] = useState<boolean>(false);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState<boolean>(false);
 
   const createPDFMutation = useCreatePDFWithFile();
   const createPDFFromLinkMutation = useCreatePDF();
@@ -57,7 +65,7 @@ const GuestUpload: React.FC = () => {
       // Auto-populate title from filename if empty
       if (!formData.title) {
         const nameWithoutExtension = file.name.replace(/\.pdf$/i, '');
-        setFormData(prev => ({ ...prev, title: nameWithoutExtension }));
+    setFormData((prev: FormDataType) => ({ ...prev, title: nameWithoutExtension }));
       }
     }
   };
@@ -65,7 +73,7 @@ const GuestUpload: React.FC = () => {
   const addTag = () => {
     const tag = tagInput.trim();
     if (tag && !formData.tags.includes(tag)) {
-      setFormData(prev => ({
+      setFormData((prev: FormDataType) => ({
         ...prev,
         tags: [...prev.tags, tag]
       }));
@@ -74,16 +82,16 @@ const GuestUpload: React.FC = () => {
   };
 
   const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev: FormDataType) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag: string) => tag !== tagToRemove)
     }));
   };
 
   const handleCategoryChange = (categoryId: string) => {
     // Find the category name by id
-    const categoryObj = categories.find(cat => cat.id === categoryId);
-    setFormData(prev => ({
+    const categoryObj = categories.find((cat: any) => cat.id === categoryId);
+    setFormData((prev: FormDataType) => ({
       ...prev,
       category: categoryObj ? categoryObj.name : ''
     }));
@@ -102,8 +110,8 @@ const GuestUpload: React.FC = () => {
     setSelectedFile(null);
     setTagInput('');
     // Reset file input
-    const fileInput = document.getElementById('pdf-file') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+  const fileInput = document.getElementById('pdf-file');
+  if (fileInput && fileInput instanceof HTMLInputElement) fileInput.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,11 +154,16 @@ const GuestUpload: React.FC = () => {
     }
 
     try {
+      // Always store the category name in the categories array
+      let categoryName = formData.category;
+      // If the category is an id, convert to name
+      const foundCat = categories.find((cat: any) => cat.id === formData.category);
+      if (foundCat) categoryName = foundCat.name;
       const pdfData = {
         title: formData.title.trim(),
         author: formData.author.trim(),
         description: formData.description.trim(),
-        categories: formData.category ? [formData.category] : [], // Now category is the name
+        categories: categoryName ? [categoryName] : [],
         tags: formData.tags,
         viewCount: 0,
         downloadCount: 0,
@@ -353,8 +366,8 @@ const GuestUpload: React.FC = () => {
               disabled={isLoading}
               style={{ display: 'none' }}
               onInput={e => {
-                const input = e.target as HTMLInputElement;
-                if (input.files && input.files[0] && input.files[0].size > 25 * 1024 * 1024) {
+                const input = e.target;
+                if (input instanceof HTMLInputElement && input.files && input.files[0] && input.files[0].size > 25 * 1024 * 1024) {
                   toast.error('File size must be less than 25MB');
                   input.value = '';
                 }
@@ -376,7 +389,7 @@ const GuestUpload: React.FC = () => {
               type="url"
               placeholder="https://example.com/document.pdf"
               value={formData.pdfLink}
-              onChange={(e) => setFormData(prev => ({ ...prev, pdfLink: e.target.value }))}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: FormDataType) => ({ ...prev, pdfLink: e.target.value }))}
               disabled={isLoading}
               style={{
                 width: '100%',
@@ -415,9 +428,9 @@ const GuestUpload: React.FC = () => {
             type="text"
             placeholder="Enter PDF title"
             value={formData.title}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               if (e.target.value.length <= 18) {
-                setFormData(prev => ({ ...prev, title: e.target.value }));
+                setFormData((prev: FormDataType) => ({ ...prev, title: e.target.value }));
               }
             }}
             disabled={isLoading}
@@ -470,7 +483,7 @@ const GuestUpload: React.FC = () => {
             type="text"
             placeholder="Enter author name"
             value={formData.author}
-            onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: FormDataType) => ({ ...prev, author: e.target.value }))}
             disabled={isLoading}
             required
             style={{
@@ -508,7 +521,7 @@ const GuestUpload: React.FC = () => {
           <textarea
             placeholder="Enter a brief description of the PDF"
             value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData((prev: FormDataType) => ({ ...prev, description: e.target.value }))}
             disabled={isLoading}
             rows={4}
             style={{
@@ -736,8 +749,8 @@ const GuestUpload: React.FC = () => {
               type="text"
               placeholder="Add a tag"
               value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTagInput(e.target.value)}
+              onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && (e.preventDefault(), addTag())}
               disabled={isLoading}
               style={{
                 flex: 1,

@@ -66,38 +66,34 @@ export const pdfService = {
     throw new Error('Direct PDF upload is not supported. Use createPDFWithFile.');
   },
 
-  // Upload PDF to ImageKit and create Firestore doc
+  // Upload PDF to ImageKit (dual account) and create Firestore doc
   async createPDFWithFile(
     file: File,
     pdfData: Omit<PDFDocument, 'id' | 'createdAt' | 'updatedAt' | 'pdfUrl' | 'fileSize' | 'fileName'>
   ): Promise<string> {
     try {
-      // Import the triple upload service
-      const { tripleUploadService } = await import('./tripleUploadService');
-      
       // Validate file type
       if (file.type !== 'application/pdf') {
         throw new Error('Only PDF files are allowed');
       }
 
-      // Use the triple upload service which handles routing based on file size
-      console.log('Starting Triple Upload System...');
-      console.log('File details:', { name: file.name, size: file.size, type: file.type });
+      // Use the dual ImageKit service for upload
+      const { imagekitDualService } = await import('./imagekitDualService');
+      console.log('Uploading PDF using ImageKit dual service...');
+      const uploadResult = await imagekitDualService.uploadPDF(file);
 
-      const pdfId = await tripleUploadService.uploadPDFFile(
-        file,
-        pdfData.title,
-        pdfData.description,
-        pdfData.categories[0] || 'General', // Use first category or default
-        pdfData.tags,
-        pdfData.author,
-        pdfData.uploadedBy
-      );
-
-      return pdfId;
+      // Create Firestore document with PDF metadata
+      const docRef = await addDoc(pdfsCollection, {
+        ...pdfData,
+        pdfUrl: uploadResult.url,
+        fileSize: uploadResult.size,
+        fileName: uploadResult.name,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      });
+      return docRef.id;
     } catch (error) {
       console.error('Error uploading PDF:', error);
-      // Provide more specific error messages
       if (error instanceof Error) {
         throw error;
       }

@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
 
 function App() {
   // Get the base URL for GitHub Pages deployment
-  const basename = import.meta.env.MODE === 'production' ? '/pdf-library-hub' : '';
+  const basename = import.meta.env.MODE === 'production' ? '/pdf' : '';
   
   return (
     <QueryClientProvider client={queryClient}>
