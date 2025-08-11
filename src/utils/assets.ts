@@ -10,12 +10,12 @@
 export const getAssetPath = (path: string): string => {
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  
-  // In production (GitHub Pages), we need to add the base path
+
+  // In production (GitHub Pages), use the new repo base path
   if (import.meta.env.MODE === 'production') {
     return `/pdf/${cleanPath}`;
   }
-  
+
   // In development, use the path as-is
   return `/${cleanPath}`;
 };
