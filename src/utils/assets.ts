@@ -13,7 +13,7 @@ export const getAssetPath = (path: string): string => {
   
   // In production (GitHub Pages), we need to add the base path
   if (import.meta.env.MODE === 'production') {
-    return `/pdf-library-hub/${cleanPath}`;
+    return `/pdf/${cleanPath}`;
   }
   
   // In development, use the path as-is
@@ -25,7 +25,7 @@ export const getAssetPath = (path: string): string => {
  */
 export const getBaseUrl = (): string => {
   if (import.meta.env.MODE === 'production') {
-    return '/pdf-library-hub';
+    return '/pdf';
   }
   return '';
 };
