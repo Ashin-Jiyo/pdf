@@ -1,37 +1,160 @@
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <title>Tea Time Study</title>
-    <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      // This script takes the current url and converts the path and query
-      // string into just a query string, and then redirects the browser
-      // to the new url with only a query string and hash fragment,
-      // e.g. https://www.foo.tld/one/two?a=b&c=d#qwe, becomes
-      // https://www.foo.tld/?/one/two&a=b~and~c=d#qwe
-      // Note: this 404.html file must be at least 512 bytes for it to work
-      // with Internet Explorer (it is currently > 512 bytes)
-
-      // If you're creating a Project Pages site and NOT using a custom domain,
-      // then set pathSegmentsToKeep to 1 (enterprise users may need to set it to > 1).
-      // This way the code will only replace the route part and not the real directory.
-      // This script will work as is for Project Pages sites using a custom domain.
-      var pathSegmentsToKeep = 1;
-
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
-
-    </script>
+    <style>
+      .glitch {
+  position: relative;
+  color: #fff;
+  font-weight: bold;
+  letter-spacing: 2px;
+  animation: glitch 1s infinite linear alternate-reverse;
+      }
+      .glitch::before,
+      .glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        color: #e63946;
+        z-index: -1;
+      }
+      .glitch::before {
+        animation: glitchTop 1s infinite linear alternate-reverse;
+        top: -2px;
+        left: 2px;
+        color: #00fff9;
+      }
+      .glitch::after {
+        animation: glitchBottom 1s infinite linear alternate-reverse;
+        top: 2px;
+        left: -2px;
+        color: #ff00ea;
+      }
+      @keyframes glitch {
+        0% { text-shadow: 2px 0 #00fff9, -2px 0 #ff00ea; }
+        20% { text-shadow: -2px -2px #00fff9, 2px 2px #ff00ea; }
+        40% { text-shadow: 2px 2px #00fff9, -2px -2px #ff00ea; }
+        60% { text-shadow: -2px 2px #00fff9, 2px -2px #ff00ea; }
+        80% { text-shadow: 2px -2px #00fff9, -2px 2px #ff00ea; }
+        100% { text-shadow: -2px 0 #00fff9, 2px 0 #ff00ea; }
+      }
+      @keyframes glitchTop {
+        0% { clip-path: inset(0 0 80% 0); }
+        50% { clip-path: inset(0 0 40% 0); }
+        100% { clip-path: inset(0 0 80% 0); }
+      }
+      @keyframes glitchBottom {
+        0% { clip-path: inset(80% 0 0 0); }
+        50% { clip-path: inset(40% 0 0 0); }
+        100% { clip-path: inset(80% 0 0 0); }
+      }
+      body {
+        background: #000;
+        color: #fff;
+        font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        text-align: center;
+      }
+      h1 {
+  font-size: 9rem;
+        margin: 0;
+        color: #e63946;
+      }
+      h2 {
+        font-size: 2rem;
+        margin: 0.5em 0 1em 0;
+      }
+      p {
+  color: #fff;
+  font-size: 2rem;
+        min-height: 1.5em;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: relative;
+      }
+      .type-caret {
+        display: inline-block;
+        width: 1ch;
+        color: #fff;
+        background: none;
+        animation: blink-caret 0.8s steps(1) infinite;
+        position: absolute;
+        right: -1ch;
+      }
+      @keyframes blink-caret {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+      a {
+        color: #457b9d;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
+    <div class="container">
+  <h1 class="glitch" data-text="404 Error">404 Error</h1>
+  <h2 class="glitch" data-text="Page Not Found">Page Not Found</h2>
+      <p>Sorry, the page you are looking for does not exist.</p>
+      <script>
+        // Typing effect for few sentences (looping)
+        const messages = [
+          "This page ran away the moment it saw you.",
+          "Whoops! Even the internet gave up on you.",
+          "Why are you still here? Hoping it’ll magically appear?",
+          "If you think waiting here will help, your maturity level might still be in beta.",
+          "GET LOST!!!"
+        ];
+        const p = document.querySelector('.container p');
+        p.innerHTML = '<span id="typed"></span><span class="type-caret">|</span>';
+        const typed = document.getElementById('typed');
+        let msgIndex = 0;
+        let i = 0;
+        let typing = true;
+        function typeLoop() {
+          const msg = messages[msgIndex];
+          if (typing) {
+            if (i <= msg.length) {
+              typed.textContent = msg.slice(0, i);
+              i++;
+              let delay = 35 + Math.random() * 80;
+              if (msg[i-2] === '.' || msg[i-2] === ',') delay += 200;
+              setTimeout(typeLoop, delay);
+            } else {
+              typing = false;
+              setTimeout(typeLoop, 1200);
+            }
+          } else {
+            if (i > 0) {
+              typed.textContent = msg.slice(0, i-1);
+              i--;
+              setTimeout(typeLoop, 18);
+            } else {
+              typing = true;
+              msgIndex = (msgIndex + 1) % messages.length;
+              setTimeout(typeLoop, 400);
+            }
+          }
+        }
+        typeLoop();
+      </script>
+    </div>
   </body>
 </html>
